@@ -1,51 +1,47 @@
 import { NextResponse } from "next/server";
 import { market } from "@/lib/market";
 
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-
   const encoder = new TextEncoder();
 
-
   const stream = new ReadableStream({
-
     start(controller) {
 
       let closed = false;
 
-
       const send = () => {
-
         if (closed) return;
-
 
         try {
 
           const candle = market.next();
+          console.log("LIVE TICK:", candle.close);
+
+          const payload = {
+            price: candle.close,
+            candle,
+            regime: "ranging",
+          };
 
 
           controller.enqueue(
- encoder.encode(
-  `data:${JSON.stringify({
-    price:candle.close,
-    candle,
-    regime:"ranging"
-  })}\n\n`
- )
-)
+            encoder.encode(
+              `data: ${JSON.stringify(payload)}\n\n`
+            )
+          );
 
 
         } catch (error) {
 
           console.error(
-            "Stream error:",
+            "SSE error:",
             error
           );
 
           cleanup();
-
         }
-
       };
 
 
@@ -59,40 +55,41 @@ export async function GET() {
 
         if(closed) return;
 
-
         closed = true;
 
         clearInterval(interval);
 
-
         try {
-
           controller.close();
-
         } catch {}
 
       }
 
 
-      // stop stream when browser disconnects
       return cleanup;
 
     }
-
   });
 
 
-  return new NextResponse(stream,{
-    headers:{
+  return new NextResponse(stream, {
+
+    headers: {
+
       "Content-Type":
-        "text/event-stream",
+        "text/event-stream; charset=utf-8",
 
       "Cache-Control":
-        "no-cache",
+        "no-cache, no-transform",
 
       "Connection":
         "keep-alive",
+
+      "X-Accel-Buffering":
+        "no",
+
     }
+
   });
 
 }

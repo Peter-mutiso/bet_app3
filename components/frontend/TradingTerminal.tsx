@@ -80,15 +80,34 @@ export default function TradingTerminal({ settings, pairs = [], news }: any) {
   const [historicalCandles, setHistoricalCandles] = useState<any[]>([])
 
   const fetchCandles = useCallback(async (showOverlay = false) => {
-    if (!pair?.id) return
-    if (showOverlay) setSwitching(true)
-    try {
-      const res = await fetch(`/api/chart?pair_id=${pair.id}`)
-      const data = await res.json()
-      setHistoricalCandles(data.candles || [])
-    } catch {}
-    setSwitching(false)
-  }, [pair?.id])
+  if (!pair?.id) return
+
+  if (showOverlay) setSwitching(true)
+
+  try {
+    console.log("========================================")
+    console.log("Loading candles for pair:", pair.id)
+
+    const res = await fetch(`/api/chart?pair_id=${pair.id}`)
+    const data = await res.json()
+
+    console.log("API Response")
+    console.log(data)
+
+    console.log("Candles returned:", data.candles?.length)
+
+    if (data.candles?.length) {
+      console.log("First candle:", data.candles[0])
+      console.log("Last candle:", data.candles[data.candles.length - 1])
+    }
+
+    setHistoricalCandles(data.candles || [])
+  } catch (err) {
+    console.error("fetchCandles error:", err)
+  }
+
+  setSwitching(false)
+}, [pair?.id])
 
   useEffect(() => { fetchCandles(true) }, [fetchCandles])
 

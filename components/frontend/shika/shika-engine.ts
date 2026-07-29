@@ -1,13 +1,3 @@
-/* ════════════════════════════════════════════════════════════════
-   Shika synthetic price engine — ported verbatim from the ShikaTrade
-   chart project (index.php). A spike-pattern generator: a base level
-   with constant micro-jitter, frequent spike clusters, small red dips
-   and occasional deep crashes with floor bounces.
-
-   The engine is fully client-side and deterministic only in shape —
-   randomness drives the mode transitions. Trade outcomes are NOT
-   decided here; they come from trading-nova's /api/trade backend.
-   ════════════════════════════════════════════════════════════════ */
 
 export interface ShikaConfig {
   TICK: number
@@ -78,7 +68,7 @@ export class ShikaEngine {
       crashBounces: 0,
       dipTarget: 0,
       dipLen: 0,
-      wobblePhase: Math.random() * 100,
+      wobblePhase: Math.random() * Math.PI * 2,
       wobbleSpeed: 0.15 + Math.random() * 0.1,
     }
   }
