@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  username          String   @unique
+  phone             String   @unique
+  password          String
+  email             String?
+  balance_kes       Float    @default(1000)
+  bonus_balance_kes Float    @default(0)
+  currency          String   @default("KES")
+  referralCode      String?  @unique
+  referredBy        String?
+  createdAt         DateTime @default(now())
+
+  trades       Trade[]
+  chatMessages ChatMessage[]
+}
+model TradingPair {
+  id               Int      @id @default(autoincrement())
+  symbol           String   @unique
+  displayName      String
+  payout           Float    @default(1.8)
+
+  isActive         Boolean  @default(true)
+  sortOrder        Int      @default(0)
+
+  payoutMultiplier Float    @default(1.8)
+
+  trades           Trade[]
+}
+model Trade {
+  id         Int      @id @default(autoincrement())
+
+  amount     Float
+  direction  String
+
+  entryPrice Float
+  exitPrice  Float?
+
+  payout     Float?
+  result     String?
+
+  duration   Int
+  
+  createdAt  DateTime @default(now())
+  settledAt  DateTime?
+
+  userId Int
+  pairId Int
+
+  user User @relation(fields: [userId], references: [id])
+  pair TradingPair @relation(fields: [pairId], references: [id])
+}
+
+model Tournament {
+  id          Int      @id @default(autoincrement())
+  name        String
+  prize       Float
+  status      String
+  participants Int     @default(0)
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  message   String
+  createdAt DateTime @default(now())
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+}
+
+model SiteSettings {
+  id                      Int     @id @default(1)
+
+  // Branding
+  siteName                String  @default("Trading Platform")
+  siteTitle               String  @default("Trading Platform")
+  logoUrl                 String?
+  faviconUrl              String?
+
+  // Trading
+  conversionRate          Float   @default(129)
+  payoutMultiplier        Float   @default(1.8)
+  demoStartingBalance     Float   @default(1000)
+  tradeDurationSeconds    Int     @default(10)
+  candleDurationSeconds   Int     @default(60)
+  landingChartStyle       String  @default("candlestick")
+
+  // Stakes
+  minStakeKes             Float   @default(50)
+  maxStakeKes             Float   @default(100000)
+
+  // Buttons
+  buyButtonLabel          String  @default("BUY")
+  sellButtonLabel         String  @default("SELL")
+
+  // Chat
+  chatSimulationEnabled   Boolean @default(true)
+  chatSimulationFreqMinSecs Int   @default(20)
+  chatSimulationFreqMaxSecs Int   @default(60)
+
+  // Community
+  whatsappCommunityUrl    String?
+
+  // How To Trade
+  howToTradeSteps         Json?
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}

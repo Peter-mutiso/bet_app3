@@ -1,0 +1,306 @@
+/* ════════════════════════════════════════════════════════════════
+   Shika terminal styles — ported from the ShikaTrade chart project.
+   Every selector is scoped under .shika-root so trading-nova's global
+   Tailwind resets don't bleed in (and vice-versa).
+   ════════════════════════════════════════════════════════════════ */
+
+.shika-root {
+  --bg-primary:#0a0e17;--bg-secondary:#0f1520;--bg-card:#131b2a;
+  --bg-elevated:#1a2436;
+  --border:#1e2d44;--border-light:#253550;
+  --text-primary:#e8edf5;--text-secondary:#7b8ca8;--text-muted:#4a5d7a;
+  --green:#00c853;--green-dark:#00a844;--green-bg:rgba(0,200,83,.08);--green-glow:rgba(0,200,83,.35);
+  --red:#ff1744;--red-bg:rgba(255,23,68,.08);--red-glow:rgba(255,23,68,.35);
+  --gold:#ffc107;--gold-bg:rgba(255,193,7,.1);
+  --blue:#2979ff;
+  --chart-bg:#000;--chart-green-fill:rgba(16,96,16,0.85);--chart-red-fill:rgba(80,16,16,0.85);
+  --chart-line:#40D040;--chart-dot:rgba(64,208,64,0.25);
+  --chart-grid:rgba(255,255,255,.07);--chart-grid-zero:rgba(255,255,255,.22);
+  --chart-label:rgba(255,255,255,.35);
+  --chart-ratebox:rgba(0,0,0,.75);--chart-ratebox-border:rgba(255,255,255,.45);--chart-rate-text:#fff;
+
+  font-family:var(--font-plus-jakarta),'Plus Jakarta Sans',sans-serif;
+  background:var(--bg-primary);color:var(--text-primary);
+  height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+  transition:background .35s ease,color .35s ease;
+}
+
+.shika-root.light-mode {
+  --bg-primary:#f0f2f5;--bg-secondary:#ffffff;--bg-card:#f8f9fb;
+  --bg-elevated:#eef1f5;
+  --border:#d8dce6;--border-light:#c4cbd8;
+  --text-primary:#1a1d26;--text-secondary:#4a5568;--text-muted:#8896ab;
+  --green:#00b84a;--green-dark:#009a3e;--green-bg:rgba(0,184,74,.1);--green-glow:rgba(0,184,74,.3);
+  --red:#e0143c;--red-bg:rgba(224,20,60,.08);--red-glow:rgba(224,20,60,.3);
+  --gold:#e6a800;--gold-bg:rgba(230,168,0,.1);
+  --blue:#1a6dff;
+  --chart-bg:#f5f7fa;--chart-green-fill:rgba(0,200,83,0.35);--chart-red-fill:rgba(255,23,68,0.30);
+  --chart-line:#00a844;--chart-dot:rgba(0,168,68,0.3);
+  --chart-grid:rgba(0,0,0,.08);--chart-grid-zero:rgba(0,0,0,.18);
+  --chart-label:rgba(0,0,0,.4);
+  --chart-ratebox:rgba(255,255,255,.9);--chart-ratebox-border:rgba(0,0,0,.2);--chart-rate-text:#1a1d26;
+}
+
+.shika-root *{margin:0;padding:0;box-sizing:border-box}
+.shika-root ::-webkit-scrollbar{width:3px}
+.shika-root ::-webkit-scrollbar-track{background:var(--bg-secondary)}
+.shika-root ::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:2px}
+
+/* ═══ HEADER ═══ */
+.shika-root .sk-header{height:52px;background:var(--bg-secondary);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;position:relative;z-index:100;transition:background .35s,border-color .35s;flex-shrink:0}
+.shika-root .sk-logo-area{display:flex;align-items:center;gap:8px}
+.shika-root .sk-logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--green),var(--blue));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;font-family:var(--font-space-grotesk),'Space Grotesk';flex-shrink:0}
+.shika-root .sk-logo-icon-img{width:32px;height:32px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,.05);padding:2px;flex-shrink:0}
+.shika-root .sk-logo-text{font-family:var(--font-space-grotesk),'Space Grotesk';font-weight:700;font-size:16px;color:var(--text-primary);letter-spacing:-.5px;white-space:nowrap}
+.shika-root .sk-header-center{flex:1;display:flex;align-items:center;justify-content:center;gap:20px}
+.shika-root .sk-header-stat{display:flex;flex-direction:column;align-items:center}
+.shika-root .sk-header-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600}
+.shika-root .sk-header-stat-val{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:13px;font-weight:600}
+.shika-root .sk-header-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.shika-root .sk-balance-pill{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:4px 14px;display:flex;align-items:center;gap:6px}
+.shika-root .sk-balance-pill .icon{width:18px;height:18px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000}
+.shika-root .sk-balance-pill .val{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--gold)}
+.shika-root .sk-btn-sm{padding:6px 14px;border-radius:6px;border:none;font-family:var(--font-plus-jakarta),'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;line-height:1}
+.shika-root .sk-btn-green{background:var(--green);color:#000}
+.shika-root .sk-btn-green:hover{background:var(--green-dark)}
+.shika-root .sk-btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}
+.shika-root .sk-btn-ghost:hover{border-color:var(--text-secondary);color:var(--text-primary)}
+
+.shika-root .sk-theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;font-size:16px;flex-shrink:0}
+.shika-root .sk-theme-toggle:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-bg)}
+
+.shika-root .sk-user-menu{position:relative}
+.shika-root .sk-user-menu-dropdown{display:none;position:absolute;top:calc(100% + 6px);right:0;min-width:180px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);padding:6px;z-index:300;animation:skMenuSlide .15s ease}
+.shika-root .sk-user-menu-dropdown.open{display:block}
+@keyframes skMenuSlide{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.shika-root .sk-user-menu-item{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:12px;color:var(--text-secondary);text-decoration:none;border-radius:6px;transition:all .15s;cursor:pointer;border:none;background:transparent;width:100%;font-family:inherit}
+.shika-root .sk-user-menu-item:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.shika-root .sk-user-menu-divider{height:1px;background:var(--border);margin:4px 0}
+.shika-root .sk-user-menu-danger:hover{background:rgba(255,23,68,.08);color:#ff6478}
+
+/* ═══ LAYOUT ═══ */
+.shika-root .sk-main-layout{display:flex;flex:1;min-height:0;overflow:hidden}
+
+/* ═══ CHAT ═══ */
+.shika-root .sk-chat-sidebar{width:280px;background:var(--bg-secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:background .35s,border-color .35s}
+.shika-root .sk-chat-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.shika-root .sk-live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green-glow);animation:skLivePulse 2s infinite}
+@keyframes skLivePulse{0%,100%{opacity:1}50%{opacity:.4}}
+.shika-root .sk-chat-header-title{font-weight:600;font-size:13px}
+.shika-root .sk-online-count{margin-left:auto;font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
+.shika-root .sk-chat-messages{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:4px}
+.shika-root .sk-chat-msg{font-size:11.5px;line-height:1.5;padding:5px 8px;border-radius:6px;animation:skMsgSlide .25s ease;word-break:break-word}
+@keyframes skMsgSlide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.shika-root .sk-chat-msg.win{background:var(--green-bg);border-left:2px solid var(--green);color:var(--green)}
+.shika-root .sk-chat-msg.bonus{background:var(--gold-bg);border-left:2px solid var(--gold);color:var(--gold)}
+.shika-root .sk-chat-msg.user{background:var(--bg-card);color:var(--text-secondary)}
+.shika-root .sk-chat-msg .name{font-weight:600}
+.shika-root .sk-chat-input-area{padding:10px;border-top:1px solid var(--border);display:flex;gap:6px}
+.shika-root .sk-chat-input{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text-primary);font-size:12px;font-family:inherit;outline:none}
+.shika-root .sk-chat-input:focus{border-color:var(--border-light)}
+.shika-root .sk-chat-send-btn{background:var(--green);color:#000;border:none;border-radius:6px;padding:0 12px;font-weight:700;font-size:11px;cursor:pointer;letter-spacing:.5px}
+
+/* ═══ TRADE CENTER ═══ */
+.shika-root .sk-trade-center{flex:1;display:flex;flex-direction:column;min-width:0}
+.shika-root .sk-instrument-bar{display:flex;align-items:center;gap:16px;padding:10px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.shika-root .sk-rate-display{display:flex;align-items:baseline;gap:6px}
+.shika-root .sk-rate-val{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:22px;font-weight:700}
+.shika-root .sk-rate-val.up{color:var(--green)}
+.shika-root .sk-rate-val.down{color:var(--red)}
+.shika-root .sk-rate-change{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:11px;padding:2px 6px;border-radius:4px;font-weight:600}
+.shika-root .sk-rate-change.up{background:var(--green-bg);color:var(--green)}
+.shika-root .sk-rate-change.down{background:var(--red-bg);color:var(--red)}
+.shika-root .sk-inst-stats{display:flex;gap:16px;margin-left:auto}
+.shika-root .sk-inst-stat{display:flex;flex-direction:column;align-items:flex-end}
+.shika-root .sk-inst-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted)}
+.shika-root .sk-inst-stat-val{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--text-secondary)}
+
+.shika-root .sk-chart-area {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  min-height: 450px;
+  background: var(--chart-bg);
+  overflow: hidden;
+  transition: background .35s;
+}
+
+.shika-root .sk-chart-canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.shika-root .sk-chart-overlay-tl{position:absolute;top:10px;left:60px;display:flex;gap:6px;z-index:10}
+.shika-root .sk-tf-btn{padding:3px 8px;border-radius:3px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.5);color:rgba(255,255,255,.4);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace}
+.shika-root .sk-tf-btn.active{background:rgba(0,200,83,.12);color:#4cff50;border-color:rgba(0,200,83,.3)}
+.shika-root.light-mode .sk-tf-btn{background:rgba(255,255,255,.8);border-color:rgba(0,0,0,.12);color:rgba(0,0,0,.45)}
+.shika-root.light-mode .sk-tf-btn.active{background:rgba(0,184,74,.12);color:#00863a;border-color:rgba(0,184,74,.3)}
+
+.shika-root .sk-autosell-hud{position:absolute;top:10px;right:12px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:11px;color:var(--text-secondary);display:none;z-index:10;line-height:1.4}
+.shika-root .sk-autosell-hud.show{display:block}
+.shika-root .sk-autosell-hud .row{display:flex;gap:6px;align-items:baseline;white-space:nowrap}
+.shika-root .sk-autosell-hud .row+.row{margin-top:2px}
+.shika-root .sk-autosell-hud .label{color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:.6px}
+.shika-root .sk-autosell-hud .val{color:var(--green);font-weight:700}
+.shika-root .sk-autosell-hud .val.warn{color:var(--gold)}
+.shika-root .sk-autosell-hud .val.danger{color:var(--red)}
+
+/* ═══ TRADE CONTROLS ═══ */
+.shika-root .sk-trade-controls{background:var(--bg-secondary);border-top:1px solid var(--border);padding:14px 16px;display:flex;align-items:stretch;gap:12px}
+.shika-root .sk-trade-amount-section{display:flex;flex-direction:column;gap:6px}
+.shika-root .sk-trade-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600}
+.shika-root .sk-amount-input-wrap{display:flex;align-items:center;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.shika-root .sk-amount-currency{padding:0 10px;font-size:12px;font-weight:700;color:var(--text-muted);border-right:1px solid var(--border);display:flex;align-items:center;align-self:stretch}
+.shika-root .sk-amount-input{background:transparent;border:none;color:var(--text-primary);font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:16px;font-weight:600;padding:10px 12px;width:120px;outline:none}
+.shika-root .sk-quick-amounts{display:flex;gap:4px}
+.shika-root .sk-quick-amt{padding:4px 10px;border-radius:4px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-secondary);font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:11px;font-weight:500;cursor:pointer}
+.shika-root .sk-quick-amt:hover{border-color:var(--green);color:var(--green)}
+.shika-root .sk-timer-section{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:80px}
+.shika-root .sk-timer-ring{width:44px;height:44px;position:relative}
+.shika-root .sk-timer-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.shika-root .sk-timer-ring circle{fill:none;stroke-width:3}
+.shika-root .sk-timer-ring .track{stroke:var(--border)}
+.shika-root .sk-timer-ring .progress{stroke:var(--green);stroke-linecap:round;transition:stroke-dashoffset .3s}
+.shika-root .sk-timer-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:14px;font-weight:700}
+.shika-root .sk-timer-label{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.shika-root .sk-duration-picker{display:flex;gap:3px;margin-top:4px}
+.shika-root .sk-dur-btn{padding:2px 5px;border-radius:4px;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:9px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px}
+.shika-root .sk-dur-btn:hover{border-color:var(--green);color:var(--green)}
+.shika-root .sk-dur-btn.active{background:rgba(0,200,83,.12);border-color:var(--green);color:var(--green)}
+.shika-root .sk-trade-buttons{display:flex;gap:8px;flex:1}
+.shika-root .sk-trade-btn{flex:1;border:none;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:var(--font-space-grotesk),'Space Grotesk';transition:all .2s;position:relative;overflow:hidden;padding:14px 8px;min-height:64px}
+.shika-root .sk-trade-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,transparent 100%);pointer-events:none}
+.shika-root .sk-trade-btn-buy{background:var(--green);box-shadow:0 4px 20px var(--green-glow)}
+.shika-root .sk-trade-btn-buy:hover{background:var(--green-dark);transform:translateY(-1px)}
+.shika-root .sk-trade-btn-sell{background:var(--red);box-shadow:0 4px 20px var(--red-glow)}
+.shika-root .sk-trade-btn-sell:hover{background:#d50032;transform:translateY(-1px)}
+.shika-root .sk-trade-btn .label{font-size:16px;font-weight:700;color:#fff;letter-spacing:1.5px;line-height:1}
+.shika-root .sk-trade-btn .sub{font-size:11px;font-weight:600;color:#fff;font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;line-height:1.2}
+.shika-root .sk-trade-btn.active-trade .label{font-size:12px;letter-spacing:.5px;opacity:.95}
+.shika-root .sk-trade-btn.active-trade .sub{font-size:12px;font-weight:700}
+.shika-root .sk-trade-btn.cashout .label{font-size:14px}
+.shika-root .sk-trade-btn.cashout .sub{font-size:13px;font-weight:700}
+.shika-root .sk-trade-btn.disabled{opacity:.55;pointer-events:none;filter:grayscale(.35)}
+.shika-root .sk-trade-btn.processing{pointer-events:none;opacity:.85}
+.shika-root .sk-trade-btn.processing .label{display:flex;align-items:center;gap:6px;font-size:13px}
+.shika-root .sk-trade-btn.processing .label::before{content:'';width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:skSpin .8s linear infinite;display:inline-block}
+@keyframes skSpin{to{transform:rotate(360deg)}}
+.shika-root .sk-trade-btn.cancel-mode{background:var(--gold)!important;color:#000;box-shadow:0 4px 20px rgba(255,193,7,.4)!important;animation:skCancelPulse 1.2s ease-in-out infinite}
+.shika-root .sk-trade-btn.cancel-mode .label,.shika-root .sk-trade-btn.cancel-mode .sub{color:#000}
+@keyframes skCancelPulse{0%,100%{box-shadow:0 4px 20px rgba(255,193,7,.4)}50%{box-shadow:0 4px 28px rgba(255,193,7,.7)}}
+
+.shika-root .sk-profit-bar{display:flex;align-items:center;gap:6px;min-width:100px;flex-direction:column;justify-content:center}
+.shika-root .sk-profit-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600}
+.shika-root .sk-profit-val{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:18px;font-weight:700}
+.shika-root .sk-profit-val.pos{color:var(--green)}
+.shika-root .sk-profit-val.neg{color:var(--red)}
+.shika-root .sk-profit-val.neutral{color:var(--text-muted)}
+
+/* ═══ LICENCE STRIP ═══ */
+.shika-root .sk-licence-strip{background:var(--bg-secondary);border-top:1px solid var(--border);padding:5px 12px;text-align:center;font-size:10px;color:var(--text-muted);letter-spacing:.2px;flex-shrink:0}
+.shika-root .sk-licence-strip .licence-no{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;color:var(--text-secondary)}
+
+/* ═══ MOBILE NAV ═══ */
+.shika-root .sk-mobile-nav{display:none;background:var(--bg-secondary);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom));flex-shrink:0}
+.shika-root .sk-mobile-nav-items{display:flex;justify-content:space-around}
+.shika-root .sk-mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text-muted);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;padding:4px 12px;text-decoration:none;background:transparent;border:none;font-family:inherit}
+.shika-root .sk-mobile-nav-item.active{color:var(--green)}
+.shika-root .sk-mobile-nav-item svg{width:20px;height:20px}
+.shika-root .sk-mobile-chat-toggle{display:none;position:fixed;bottom:120px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--green);color:#000;border:none;cursor:pointer;z-index:200;box-shadow:0 4px 16px var(--green-glow);font-size:18px;align-items:center;justify-content:center}
+
+/* ═══ MODALS ═══ */
+.shika-root .sk-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center}
+.shika-root .sk-modal-overlay.show{display:flex}
+.shika-root .sk-modal-box{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px 32px;max-width:380px;width:90%;animation:skModalPop .3s ease}
+@keyframes skModalPop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.shika-root .sk-modal-title{font-family:var(--font-space-grotesk),'Space Grotesk';font-size:18px;font-weight:700;margin-bottom:16px;text-align:center}
+.shika-root .sk-modal-input{width:100%;background:rgba(127,140,168,.08);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text-primary);font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:15px;font-weight:600;outline:none;margin-bottom:10px}
+.shika-root .sk-modal-input:focus{border-color:var(--green)}
+.shika-root .sk-modal-input-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600;margin-bottom:4px;display:block}
+.shika-root .sk-modal-btn{width:100%;padding:12px;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;font-family:var(--font-space-grotesk),'Space Grotesk'}
+.shika-root .sk-modal-btn-green{background:var(--green);color:#000}
+.shika-root .sk-modal-btn-green:hover{background:var(--green-dark)}
+.shika-root .sk-modal-btn-green:disabled{opacity:.6;cursor:not-allowed}
+.shika-root .sk-modal-btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-secondary);margin-top:8px}
+.shika-root .sk-modal-btn-ghost:hover{border-color:var(--text-secondary)}
+.shika-root .sk-modal-status{text-align:center;font-size:13px;margin-top:12px;min-height:20px}
+
+.shika-root .sk-result-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.shika-root .sk-result-icon.win{background:var(--green-bg);border:2px solid var(--green);color:var(--green)}
+.shika-root .sk-result-icon.lose{background:var(--red-bg);border:2px solid var(--red);color:var(--red)}
+.shika-root .sk-result-title{font-family:var(--font-space-grotesk),'Space Grotesk';font-size:20px;font-weight:700;margin-bottom:8px;text-align:center}
+.shika-root .sk-result-title.win{color:var(--green)}
+.shika-root .sk-result-title.lose{color:var(--red)}
+.shika-root .sk-result-amount{font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace;font-size:28px;font-weight:700;margin-bottom:16px;text-align:center}
+.shika-root .sk-result-details{font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.8;text-align:center}
+.shika-root .sk-result-details span{color:var(--text-primary);font-weight:600}
+
+/* ═══ TOASTS ═══ */
+.shika-root .sk-toast-stack{position:fixed;top:68px;right:16px;z-index:600;display:flex;flex-direction:column;gap:8px;max-width:340px;pointer-events:none}
+.shika-root .sk-toast{background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:13px;color:var(--text-primary);display:flex;align-items:flex-start;gap:10px;pointer-events:auto;animation:skToastIn .3s ease-out;transition:opacity .35s,transform .35s}
+.shika-root .sk-toast.leaving{opacity:0;transform:translateX(20px)}
+.shika-root .sk-toast .toast-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px}
+.shika-root .sk-toast .toast-body{line-height:1.4}
+.shika-root .sk-toast .toast-body strong{display:block;font-weight:600;margin-bottom:2px}
+.shika-root .sk-toast .toast-body small{color:var(--text-secondary);font-size:11px}
+.shika-root .sk-toast.toast-info{border-left-color:var(--blue)}
+.shika-root .sk-toast.toast-info .toast-icon{background:rgba(41,121,255,.1);color:var(--blue)}
+.shika-root .sk-toast.toast-warn{border-left-color:var(--gold)}
+.shika-root .sk-toast.toast-warn .toast-icon{background:var(--gold-bg);color:var(--gold)}
+.shika-root .sk-toast.toast-error{border-left-color:var(--red)}
+.shika-root .sk-toast.toast-error .toast-icon{background:var(--red-bg);color:var(--red)}
+@keyframes skToastIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+
+.shika-root .sk-toast-hero-wrap{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:650;pointer-events:none;max-width:92vw}
+.shika-root .sk-toast-hero{background:linear-gradient(135deg,rgba(0,200,83,.18),rgba(0,200,83,.08));border:1.5px solid var(--green);border-radius:14px;padding:14px 22px 14px 18px;box-shadow:0 0 0 1px rgba(0,200,83,.2),0 20px 48px rgba(0,200,83,.35);display:flex;align-items:center;gap:14px;pointer-events:auto;animation:skHeroPop .45s cubic-bezier(.34,1.56,.64,1);min-width:320px;backdrop-filter:blur(10px)}
+.shika-root .sk-toast-hero.leaving{animation:skHeroOut .4s ease forwards}
+.shika-root .sk-toast-hero .hero-check{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--green);color:#000;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800}
+.shika-root .sk-toast-hero .hero-title{font-family:var(--font-space-grotesk),'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--green)}
+.shika-root .sk-toast-hero .hero-sub{font-size:12px;color:var(--text-secondary);margin-top:2px;font-family:var(--font-jetbrains-mono),'JetBrains Mono',monospace}
+.shika-root .sk-toast-hero .hero-sub strong{color:var(--text-primary);font-weight:700}
+@keyframes skHeroPop{0%{opacity:0;transform:translate(-50%,-14px) scale(.9)}60%{opacity:1;transform:translate(-50%,4px) scale(1.02)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
+@keyframes skHeroOut{to{opacity:0;transform:translate(-50%,-14px) scale(.95)}}
+
+/* ═══ CELEBRATION ═══ */
+.shika-root .sk-celebration{position:fixed;inset:0;pointer-events:none;z-index:1000;overflow:hidden}
+.shika-root .sk-balloon{position:absolute;bottom:-80px;border-radius:50% 50% 50% 50% / 55% 55% 45% 45%;animation:skBalloonRise linear forwards}
+.shika-root .sk-balloon::after{content:'';position:absolute;bottom:-10px;left:50%;width:1px;height:12px;background:rgba(255,255,255,.3);transform:translateX(-50%)}
+.shika-root .sk-confetti{position:absolute;top:-20px;width:10px;height:14px;animation:skConfettiFall linear forwards}
+@keyframes skBalloonRise{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:1}100%{transform:translateY(-110vh) rotate(var(--spin,20deg));opacity:.9}}
+@keyframes skConfettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(105vh) rotate(var(--spin,720deg));opacity:.8}}
+
+/* ═══ TABLET (≤900px) ═══ */
+@media(max-width:900px){
+  .shika-root .sk-chat-sidebar{display:none}
+  .shika-root .sk-chat-sidebar.mobile-open{display:flex;position:fixed;inset:52px 0 0 0;width:100%;z-index:300;background:var(--bg-secondary)}
+  .shika-root .sk-mobile-chat-toggle{display:none}
+  .shika-root .sk-inst-stats{display:none}
+  .shika-root .sk-header-center{display:none}
+}
+
+/* ═══ PHONE (≤640px) ═══ */
+@media(max-width:640px){
+  .shika-root .sk-header{padding:0 10px;height:48px;gap:8px}
+  .shika-root .sk-logo-text{font-size:13px;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+  .shika-root .sk-header-right{gap:6px}
+  .shika-root .sk-btn-sm{padding:6px 10px;font-size:11px;white-space:nowrap}
+  .shika-root .sk-deposit-label,.shika-root .sk-withdraw-label{display:none}
+  .shika-root .sk-rate-val{font-size:18px}
+  .shika-root .sk-chart-overlay-tl{top:6px;left:4px;gap:4px}
+  .shika-root .sk-trade-controls{flex-wrap:wrap;padding:10px 12px 12px;gap:8px;align-items:center}
+  .shika-root .sk-trade-amount-section{flex-direction:row;align-items:center;width:100%;gap:6px;order:1}
+  .shika-root .sk-trade-label{display:none}
+  .shika-root .sk-amount-input{width:78px}
+  .shika-root .sk-quick-amounts{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .shika-root .sk-quick-amt{padding:8px 4px;text-align:center}
+  .shika-root .sk-timer-section{flex-direction:row;gap:8px;min-width:unset;order:2;flex-shrink:0}
+  .shika-root .sk-timer-ring{width:34px;height:34px}
+  .shika-root .sk-profit-bar{flex-direction:row;min-width:unset;gap:6px;margin-left:auto;order:3;align-items:baseline}
+  .shika-root .sk-trade-buttons{width:100%;flex:1 1 100%;order:4}
+  .shika-root .sk-mobile-nav{display:block}
+  .shika-root .sk-toast-stack{top:56px;left:8px;right:8px;max-width:none}
+  .shika-root .sk-toast-hero-wrap{top:56px;left:8px;right:8px;transform:none;max-width:none}
+  .shika-root .sk-toast-hero{min-width:0;padding:12px 14px;gap:10px}
+}

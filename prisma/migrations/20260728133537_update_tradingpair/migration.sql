@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "TradingPair" ADD COLUMN     "isActive" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "payoutMultiplier" DOUBLE PRECISION NOT NULL DEFAULT 1.8,
+ADD COLUMN     "sortOrder" INTEGER NOT NULL DEFAULT 0;
