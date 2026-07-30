@@ -115,6 +115,7 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     },
   }))
 
+  // 1. Chart Initialization
   useEffect(() => {
     if (!containerRef.current) return
     const el = containerRef.current
@@ -176,19 +177,13 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
       }
     })
 
-    const observer = new ResizeObserver(() => {
-      const width = el.clientWidth
-      const height = el.clientHeight
-      if(width > 0 && height > 0){
-        chart.applyOptions({ width, height })
-        setTimeout(() => {
-          if(!userScrolledRef.current){
-            programmingScrollRef.current = true
-            chart.timeScale().scrollToRealTime()
-            programmingScrollRef.current = false
-          }
-        }, 50)
-      }
+    // Fixed: Using requestAnimationFrame for smooth resizing
+    const observer = new ResizeObserver((entries) => {
+      if (!entries[0] || !chartRef.current) return;
+      const { width, height } = entries[0].contentRect;
+      requestAnimationFrame(() => {
+        chartRef.current?.applyOptions({ width, height });
+      });
     })
 
     observer.observe(el)
@@ -201,17 +196,19 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     }
   }, []) 
 
+  // 2. Historical Data Handling
   useEffect(() => {
     const series = seriesRef.current
     const chart = chartRef.current
 
-    if (!series || !chart) return
-    userScrolledRef.current = false
+    if (!series || !chart || !historicalCandles.length) return
 
-    if (!historicalCandles.length) {
-        series.setData([])
-        return
-    }
+    const lastTime = Math.floor(new Date(historicalCandles[historicalCandles.length - 1].time_open).getTime() / 1000)
+    
+    // Guard: Prevent "breaking" / resetting if data hasn't changed
+    if (lastHistBarTimeRef.current === lastTime) return;
+
+    userScrolledRef.current = false
 
     const raw = historicalCandles.map(c => ({
         time: toLocal(Math.floor(new Date(c.time_open).getTime() / 1000)),
@@ -225,15 +222,14 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     const data = fillClientGaps(cleaned, candleDuration)
 
     series.setData(data)
-    
-    setTimeout(()=>{
-      programmingScrollRef.current = true
-      chart.timeScale().fitContent()
-      chart.timeScale().scrollToRealTime()
-      programmingScrollRef.current = false
-    }, 100)
-
     lastHistBarTimeRef.current = data[data.length - 1].time as number
+
+    // Logic to scroll to current
+    programmingScrollRef.current = true
+    chart.timeScale().fitContent()
+    chart.timeScale().scrollToRealTime()
+    programmingScrollRef.current = false
+
     const last = data.length - 1
     const historyRatio = 0.30
     const historyBars = Math.floor(visibleCandles * historyRatio)
@@ -247,6 +243,7 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
 
   }, [historicalCandles, candleDuration, visibleCandles])
 
+  // 3. SSE Stream
   useEffect(() => {
     if (!pairId) return
 
@@ -271,6 +268,7 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
         if (series && payload.candle) {
           const liveTime = toLocal(payload.candle.time) as number;
 
+          // Ignore ticks older than our last known history
           if (lastHistBarTimeRef.current > 0 && liveTime < lastHistBarTimeRef.current) return;
           
           if (lastKnownPrice !== null) {
@@ -327,6 +325,7 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     }
   }, [pairId, streamUrl])
 
+  // 4. Entry Price Line
   useEffect(() => {
     const series = seriesRef.current
     if (!series) return
