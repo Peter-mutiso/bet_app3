@@ -598,7 +598,7 @@ const symbol = getCurrencySymbol(activeCurrency)
       onTick={isMobile ? undefined : handleTick}
       streamUrl="/api/chart/stream"
       entryPrice={null}
-      visibleCandles={20}
+      visibleCandles={18}
                 />
               )}
             </div>
@@ -770,14 +770,14 @@ max-h-[650px]
                 onTick={isMobile ? undefined : handleTick}
                 streamUrl="/api/chart/stream"
                 entryPrice={null}
-                visibleCandles={20}
+                visibleCandles={18}
               />
             )}
           </div>
         </div>
 
         {/* Right: trading panel + chat */}
-<div className="flex flex-col lg:flex-row w-full lg:w-[38%] xl:w-[34%] border-l border-[#1f2937] min-h-0 relative z-20">
+<div className="flex flex-col lg:flex-row w-full lg:w-[47%] xl:w-[25%] border-l border-[#1f2937] min-h-0 relative z-20">
   <div className="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
     <TradingPanel
       balance={currentBalance}
