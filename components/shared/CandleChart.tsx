@@ -119,65 +119,57 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
   useEffect(() => {
     if (!containerRef.current) return
     const el = containerRef.current
+    
+    // Defensive: Clear container to prevent duplicate chart artifacts
+    el.innerHTML = ''; 
 
-    const chart = createChart(el, {
-      width: el.clientWidth,
-      height: el.clientHeight,
-      layout: {
-        background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: 'rgb(148 163 184)',
-      },
-      grid: {
-        vertLines: { color: 'rgba(148,163,184,0.08)' },
-        horzLines: { color: 'rgba(148,163,184,0.08)' },
-      },
-      crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: {
-        borderColor: 'rgba(148,163,184,0.15)',
-        scaleMargins: { top: 0.08, bottom: 0.08 },
-        minimumWidth: 90,
-      },
-      timeScale: {
-        borderColor: 'rgba(148,163,184,0.15)',
-        timeVisible: true,
-        secondsVisible: candleDuration < 60,
-        rightOffset: 5,
-        barSpacing: 9,
-      },
-      handleScroll: true,
-      handleScale: true,
-    })
+    function initChart(element: HTMLDivElement) {
+        if (chartRef.current) return; // Prevent double initialization
+        
+        const chart = createChart(element, {
+            width: element.clientWidth,
+            height: element.clientHeight,
+            layout: { background: { type: ColorType.Solid, color: 'transparent' }, textColor: 'rgb(148 163 184)' },
+            grid: { vertLines: { color: 'rgba(148,163,184,0.08)' }, horzLines: { color: 'rgba(148,163,184,0.08)' } },
+            crosshair: { mode: CrosshairMode.Normal },
+            rightPriceScale: { borderColor: 'rgba(148,163,184,0.15)', scaleMargins: { top: 0.08, bottom: 0.08 }, minimumWidth: 90 },
+            timeScale: { borderColor: 'rgba(148,163,184,0.15)', timeVisible: true, secondsVisible: candleDuration < 60, rightOffset: 5, barSpacing: 9 },
+            handleScroll: true, handleScale: true,
+        })
+        const series = chart.addSeries(CandlestickSeries, {
+            upColor: '#22c55e', downColor: '#ef4444', borderUpColor: '#22c55e', borderDownColor: '#ef4444', wickUpColor: '#4ade80', wickDownColor: '#f87171',
+            priceFormat: { type: 'price', precision: 5, minMove: 0.00001 },
+        })
+        
+        chartRef.current = chart
+        seriesRef.current = series
 
-    const series = chart.addSeries(CandlestickSeries, {
-      upColor:        '#22c55e',
-      downColor:      '#ef4444',
-      borderUpColor:  '#22c55e',
-      borderDownColor: '#ef4444',
-      wickUpColor:    '#4ade80',
-      wickDownColor:  '#f87171',
-      priceFormat: {
-        type: 'price',
-        precision: 5,
-        minMove: 0.00001,
-      },
-    })
+        chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+            if (!programmingScrollRef.current) {
+                userScrolledRef.current = true
+                if (range && range.from < 0) {
+                    const width = range.to - range.from
+                    programmingScrollRef.current = true
+                    chart.timeScale().setVisibleLogicalRange({ from: 0, to: width })
+                    programmingScrollRef.current = false
+                }
+            }
+        })
+    }
 
-    chartRef.current  = chart
-    seriesRef.current = series
+    // Try to initialize, or wait for dimensions to be ready (prevents loading freeze)
+    if (el.clientWidth > 0 && el.clientHeight > 0) {
+        initChart(el)
+    } else {
+        const checkSize = setInterval(() => {
+            if (el.clientWidth > 0 && el.clientHeight > 0) {
+                clearInterval(checkSize)
+                initChart(el)
+            }
+        }, 100)
+        setTimeout(() => clearInterval(checkSize), 3000) // Timeout after 3s
+    }
 
-    chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-      if (!programmingScrollRef.current) {
-        userScrolledRef.current = true
-        if (range && range.from < 0) {
-          const width = range.to - range.from
-          programmingScrollRef.current = true
-          chart.timeScale().setVisibleLogicalRange({ from: 0, to: width })
-          programmingScrollRef.current = false
-        }
-      }
-    })
-
-    // Fixed: Using requestAnimationFrame for smooth resizing
     const observer = new ResizeObserver((entries) => {
       if (!entries[0] || !chartRef.current) return;
       const { width, height } = entries[0].contentRect;
@@ -185,13 +177,15 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
         chartRef.current?.applyOptions({ width, height });
       });
     })
-
     observer.observe(el)
+
     return () => {
       observer.disconnect()
-      chart.remove()
-      chartRef.current  = null
-      seriesRef.current = null
+      if (chartRef.current) {
+          chartRef.current.remove()
+          chartRef.current = null
+          seriesRef.current = null
+      }
       entryLineRef.current = null
     }
   }, []) 
@@ -205,7 +199,6 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
 
     const lastTime = Math.floor(new Date(historicalCandles[historicalCandles.length - 1].time_open).getTime() / 1000)
     
-    // Guard: Prevent "breaking" / resetting if data hasn't changed
     if (lastHistBarTimeRef.current === lastTime) return;
 
     userScrolledRef.current = false
@@ -224,11 +217,13 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     series.setData(data)
     lastHistBarTimeRef.current = data[data.length - 1].time as number
 
-    // Logic to scroll to current
-    programmingScrollRef.current = true
-    chart.timeScale().fitContent()
-    chart.timeScale().scrollToRealTime()
-    programmingScrollRef.current = false
+    // Ensure layout update
+    requestAnimationFrame(() => {
+        programmingScrollRef.current = true
+        chart.timeScale().fitContent()
+        chart.timeScale().scrollToRealTime()
+        programmingScrollRef.current = false
+    })
 
     const last = data.length - 1
     const historyRatio = 0.30
@@ -268,7 +263,6 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
         if (series && payload.candle) {
           const liveTime = toLocal(payload.candle.time) as number;
 
-          // Ignore ticks older than our last known history
           if (lastHistBarTimeRef.current > 0 && liveTime < lastHistBarTimeRef.current) return;
           
           if (lastKnownPrice !== null) {
