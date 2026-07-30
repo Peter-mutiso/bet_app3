@@ -63,7 +63,11 @@ class MarketEngine {
 
   this.price +=
     this.drift +
-    noise
+    noise;
+
+// Soft pull toward the base price
+this.price +=
+    (100 - this.price) * 0.002
 
   return this.price
 }
@@ -86,16 +90,16 @@ class MarketEngine {
       const open = price
 
       const move =
-        (Math.random() - 0.5) * 0.35
+    (Math.random() - 0.5) * 0.04;
 
       const close =
         open + move
 
       const wickUp =
-        Math.random() * 0.18
+    Math.random() * 0.03;
 
-      const wickDown =
-        Math.random() * 0.18
+const wickDown =
+    Math.random() * 0.03;
 
       const candle: Candle = {
         time,
@@ -112,6 +116,17 @@ class MarketEngine {
       this.candles.push(candle)
 
       price = close
+      const BASE_PRICE = 100;
+const MAX_DRIFT = 5;
+
+// Pull the price back toward 100
+price += (BASE_PRICE - price) * 0.02;
+
+// Never allow history to wander too far
+price = Math.max(
+    BASE_PRICE - MAX_DRIFT,
+    Math.min(BASE_PRICE + MAX_DRIFT, price)
+);
     }
 
     this.price = price
