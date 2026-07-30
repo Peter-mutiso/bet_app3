@@ -676,10 +676,9 @@ const symbol = getCurrencySymbol(activeCurrency)
       </div>
 
       {/* ── DESKTOP layout (hidden on mobile) ── */}
-      <div className="hidden md:flex flex-1 flex-row min-h-0 overflow-hidden">
+      <div className="hidden md:flex flex-1 flex-row min-h-0 overflow-hidden w-full">
         {/* Left: chart column */}
-        <div className="flex flex-col flex-1 min-w-0 min-h-0 bg-[#0a0f1c]">
-          {/* Pair ticker — desktop */}
+        <div className="flex flex-col w-full lg:w-[58%] xl:w-[60%] min-w-0 min-h-0 bg-[#0a0f1c]">
           <PairTicker pairs={pairs} selectedPairId={pair?.id} onSelect={setSelectedPairId} settings={settings} />
           {/* Stats bar */}
           <div className="h-16 border-b border-[#1f2937] flex items-center px-6 justify-between shrink-0">
@@ -777,8 +776,8 @@ max-h-[650px]
         </div>
 
         {/* Right: trading panel + chat */}
-<div className="flex flex-col lg:flex-row w-full lg:w-[50%] xl:w-[22%] border-l border-[#1f2937] min-h-0 relative z-20">
-  <div className="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
+<div className="flex flex-col lg:flex-row w-full lg:w-[41%] xl:w-[13%] border-l border-[#1f2937] min-h-0 relative z-20">
+  <div className="lg:w-[60%] border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
     <TradingPanel
       balance={currentBalance}
       pair={pair}
@@ -791,7 +790,7 @@ max-h-[650px]
       livePrice={livePrice}
     />
   </div>
-  <div className="lg:w-1/2 overflow-hidden flex flex-col">
+  <div className="lg:w-[40%] overflow-hidden flex flex-col">
     <DesktopRightTab 
       user={user} 
       conversionRate={conversionRate} 
