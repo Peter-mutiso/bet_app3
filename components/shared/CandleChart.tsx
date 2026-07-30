@@ -227,14 +227,16 @@ const CandleChart = forwardRef<
 
       chart.timeScale().fitContent()
 
-      chart.timeScale().setVisibleLogicalRange({
-    from: Math.max(
-        0,
-        series.data().length - visibleCandles
-    ),
-    to: series.data().length + 0.2,
-})
+      const series = seriesRef.current
 
+if (!series) return
+
+const total = series.data().length
+
+chart.timeScale().setVisibleLogicalRange({
+    from: Math.max(0, total - visibleCandles),
+    to: total,
+})
       internalScroll.current = false
     },
 

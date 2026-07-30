@@ -777,7 +777,7 @@ max-h-[650px]
         </div>
 
         {/* Right: trading panel + chat */}
-<div className="flex flex-col lg:flex-row w-full lg:w-[47%] xl:w-[25%] border-l border-[#1f2937] min-h-0 relative z-20">
+<div className="flex flex-col lg:flex-row w-full lg:w-[50%] xl:w-[22%] border-l border-[#1f2937] min-h-0 relative z-20">
   <div className="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
     <TradingPanel
       balance={currentBalance}
