@@ -115,7 +115,6 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     },
   }))
 
-  // ── 1. Create chart once on mount ────────────────────────────────────
   useEffect(() => {
     if (!containerRef.current) return
     const el = containerRef.current
@@ -149,12 +148,12 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     })
 
     const series = chart.addSeries(CandlestickSeries, {
-      upColor:         '#22c55e',
-      downColor:       '#ef4444',
-      borderUpColor:   '#22c55e',
+      upColor:        '#22c55e',
+      downColor:      '#ef4444',
+      borderUpColor:  '#22c55e',
       borderDownColor: '#ef4444',
-      wickUpColor:     '#4ade80',
-      wickDownColor:   '#f87171',
+      wickUpColor:    '#4ade80',
+      wickDownColor:  '#f87171',
       priceFormat: {
         type: 'price',
         precision: 5,
@@ -168,8 +167,6 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
       if (!programmingScrollRef.current) {
         userScrolledRef.current = true
-
-        // Clamp left edge: don't scroll past the first candle
         if (range && range.from < 0) {
           const width = range.to - range.from
           programmingScrollRef.current = true
@@ -180,38 +177,21 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
     })
 
     const observer = new ResizeObserver(() => {
-
-  const width = el.clientWidth
-  const height = el.clientHeight
-
-  if(width > 0 && height > 0){
-
-    chart.applyOptions({
-      width,
-      height,
+      const width = el.clientWidth
+      const height = el.clientHeight
+      if(width > 0 && height > 0){
+        chart.applyOptions({ width, height })
+        setTimeout(() => {
+          if(!userScrolledRef.current){
+            programmingScrollRef.current = true
+            chart.timeScale().scrollToRealTime()
+            programmingScrollRef.current = false
+          }
+        }, 50)
+      }
     })
 
-
-    // important after resize
-    setTimeout(() => {
-
-      if(!userScrolledRef.current){
-
-        programmingScrollRef.current = true
-
-        chart.timeScale().scrollToRealTime()
-
-        programmingScrollRef.current = false
-
-      }
-
-    },50)
-
-  }
-
-})
-
-observer.observe(el)
+    observer.observe(el)
     return () => {
       observer.disconnect()
       chart.remove()
@@ -219,18 +199,13 @@ observer.observe(el)
       seriesRef.current = null
       entryLineRef.current = null
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, []) 
 
- useEffect(() => {
+  useEffect(() => {
     const series = seriesRef.current
     const chart = chartRef.current
 
     if (!series || !chart) return
-
-    console.log("===================================")
-    console.log("CandleChart received props")
-    console.log("historicalCandles:", historicalCandles.length)
-
     userScrolledRef.current = false
 
     if (!historicalCandles.length) {
@@ -238,78 +213,40 @@ observer.observe(el)
         return
     }
 
-    console.log("First historical:", historicalCandles[0])
-    console.log("Last historical:", historicalCandles[historicalCandles.length - 1])
-
     const raw = historicalCandles.map(c => ({
-        time: toLocal(
-            Math.floor(
-                new Date(c.time_open).getTime() / 1000
-            )
-        ),
+        time: toLocal(Math.floor(new Date(c.time_open).getTime() / 1000)),
         open: Number(c.open),
         high: Number(c.high),
         low: Number(c.low),
         close: Number(c.close),
     }))
 
-    console.log("Raw bars:", raw.length)
-    console.log("Raw first:", raw[0])
-    console.log("Raw last:", raw[raw.length - 1])
-
     const cleaned = cleanBars(raw)
-
-    console.log("Cleaned:", cleaned.length)
-
     const data = fillClientGaps(cleaned, candleDuration)
 
-    console.log("Filled:", data.length)
-    console.log("Chart first:", data[0])
-    console.log("Chart last:", data[data.length - 1])
-
     series.setData(data)
+    
     setTimeout(()=>{
+      programmingScrollRef.current = true
+      chart.timeScale().fitContent()
+      chart.timeScale().scrollToRealTime()
+      programmingScrollRef.current = false
+    }, 100)
 
-  programmingScrollRef.current = true
-
-  chart.timeScale().fitContent()
-
-  chart.timeScale().scrollToRealTime()
-
-  programmingScrollRef.current = false
-
-},100)
-
-    lastHistBarTimeRef.current =
-        data[data.length - 1].time as number
-
+    lastHistBarTimeRef.current = data[data.length - 1].time as number
     const last = data.length - 1
-
-    console.log("Last logical index:", last)
-
     const historyRatio = 0.30
     const historyBars = Math.floor(visibleCandles * historyRatio)
 
-    console.log("Visible candles:", visibleCandles)
-    console.log("History bars:", historyBars)
-
     programmingScrollRef.current = true
-
     chart.timeScale().setVisibleLogicalRange({
         from: last - historyBars,
         to: last + (visibleCandles - historyBars),
     })
-
-    console.log(
-        "Logical range:",
-        chart.timeScale().getVisibleLogicalRange()
-    )
-
     programmingScrollRef.current = false
 
-}, [historicalCandles, candleDuration, visibleCandles])
+  }, [historicalCandles, candleDuration, visibleCandles])
 
-  // ── 3. SSE subscription with auto-reconnect ───────────────────────────
   useEffect(() => {
     if (!pairId) return
 
@@ -326,7 +263,7 @@ observer.observe(el)
       esRef.current = es
 
       es.onmessage = (event) => {
-        retryDelay = 1000 // reset backoff on success
+        retryDelay = 1000
         const payload: TickPayload = JSON.parse(event.data)
         const series = seriesRef.current
         const chart  = chartRef.current
@@ -334,13 +271,8 @@ observer.observe(el)
         if (series && payload.candle) {
           const liveTime = toLocal(payload.candle.time) as number;
 
-if (
-  lastHistBarTimeRef.current > 0 &&
-  liveTime < lastHistBarTimeRef.current
-) {
-  return;
-}
-          // (>0.5% gap), patch the open of the incoming candle to avoid visual jump
+          if (lastHistBarTimeRef.current > 0 && liveTime < lastHistBarTimeRef.current) return;
+          
           if (lastKnownPrice !== null) {
             const pctDiff = Math.abs(payload.candle.open - lastKnownPrice) / lastKnownPrice
             if (pctDiff > 0.005) {
@@ -352,33 +284,26 @@ if (
           lastKnownPrice = payload.candle.close
 
           const updateBar = {
-  time: toLocal(payload.candle.time) as UTCTimestamp,
-  open: payload.candle.open,
-  high: payload.candle.high,
-  low: payload.candle.low,
-  close: payload.candle.close,
-}
-          try {
-            console.log("Live update")
-console.log(updateBar)
-            series.update(updateBar)
-          } catch { /* stale tick — ignore */ }
+            time: toLocal(payload.candle.time) as UTCTimestamp,
+            open: payload.candle.open,
+            high: payload.candle.high,
+            low: payload.candle.low,
+            close: payload.candle.close,
+          }
+          try { series.update(updateBar) } catch { }
 
           if (!userScrolledRef.current && chart) {
-    const range = chart.timeScale().getVisibleLogicalRange()
-
-    if (range) {
-  const latestIndex = series.data().length - 1;
-
-  if (range.to < latestIndex - 2) {
-    programmingScrollRef.current = true;
-    chart.timeScale().scrollToRealTime();
-    programmingScrollRef.current = false;
-  }
-} 
-}
+            const range = chart.timeScale().getVisibleLogicalRange()
+            if (range) {
+              const latestIndex = series.data().length - 1;
+              if (range.to < latestIndex - 2) {
+                programmingScrollRef.current = true;
+                chart.timeScale().scrollToRealTime();
+                programmingScrollRef.current = false;
+              }
+            } 
+          }
         }
-
         onTickRef.current?.(payload)
       }
 
@@ -394,7 +319,6 @@ console.log(updateBar)
     }
 
     connect()
-
     return () => {
       destroyed = true
       if (retryTimer) clearTimeout(retryTimer)
@@ -403,12 +327,10 @@ console.log(updateBar)
     }
   }, [pairId, streamUrl])
 
-  // ── 4. Entry price horizontal line ────────────────────────────────────
   useEffect(() => {
     const series = seriesRef.current
     if (!series) return
 
-    // Remove old line
     if (entryLineRef.current) {
       try { series.removePriceLine(entryLineRef.current) } catch {}
       entryLineRef.current = null
@@ -427,11 +349,11 @@ console.log(updateBar)
   }, [entryPrice])
 
   return (
-  <div
-    ref={containerRef}
-    className="w-full h-full min-h-[500px]"
-  />
-)
+    <div
+      ref={containerRef}
+      className="w-full h-full"
+    />
+  )
 })
 
 export default CandleChart

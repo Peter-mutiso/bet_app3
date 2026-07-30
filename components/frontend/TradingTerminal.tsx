@@ -563,14 +563,18 @@ const symbol = getCurrencySymbol(activeCurrency)
                 </div>
               </div>
             </div>
-            {/* Chart — fixed height */}
-            <div
-  className="w-full bg-[#0a0f1c] relative flex-shrink-0"
-  style={{
-    aspectRatio: "16 / 9",
-    minHeight: "240px",
-    maxHeight: "420px",
-  }}
+            {/* Chart */}
+<div
+  className="
+    w-full
+    bg-[#0a0f1c]
+    relative
+    overflow-hidden
+    h-[42vh]
+    min-h-[320px]
+    max-h-[650px]
+    isolate
+  "
 >
               {switching ? (
                 <div className="absolute inset-0 bg-[#0a0f1c] flex flex-col items-center justify-center gap-3">
@@ -585,16 +589,16 @@ const symbol = getCurrencySymbol(activeCurrency)
                   </div>
                 </div>
               ) : (
-                <CandleChart
-                  key={pair?.id}
-                  ref={mobileChartRef}
-                  historicalCandles={historicalCandles}
-                  pairId={pair?.id}
-                  candleDuration={settings?.candle_duration_seconds || 60}
-                  onTick={isMobile ? handleTick : undefined}
-                  streamUrl="/api/chart/stream"
-                  entryPrice={null}
-                  visibleCandles={10}
+    <CandleChart
+      key={pair?.id}
+      ref={chartRef}
+      historicalCandles={historicalCandles}
+      pairId={pair?.id}
+      candleDuration={settings?.candle_duration_seconds || 60}
+      onTick={isMobile ? undefined : handleTick}
+      streamUrl="/api/chart/stream"
+      entryPrice={null}
+      visibleCandles={20}
                 />
               )}
             </div>
@@ -773,24 +777,34 @@ max-h-[650px]
         </div>
 
         {/* Right: trading panel + chat */}
-        <div className="flex flex-col lg:flex-row w-full lg:w-[38%] xl:w-[34%] border-l border-[#1f2937] min-h-0">
-          <div className="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
-            <TradingPanel
-              balance={currentBalance}
-              pair={pair}
-              onTrade={handleTrade}
-              activeTrade={activeTrade}
-              buyLabel={settings?.buy_button_label}
-              sellLabel={settings?.sell_button_label}
-              settings={{ ...settings, payout_multiplier: payoutMultiplier }}
-              activeCurrency={activeCurrency}
-              livePrice={livePrice}
-            />
-          </div>
-          <div className="lg:w-1/2 overflow-hidden flex flex-col">
-            <DesktopRightTab user={user} conversionRate={conversionRate} activeCurrency={activeCurrency} activeTab={desktopTab} onTabChange={setDesktopTab} onBalanceDeducted={refreshUser} onLoginClick={() => openAuth('login')} onTournamentsChange={refreshActiveTournament} />
-          </div>
-        </div>
+<div className="flex flex-col lg:flex-row w-full lg:w-[38%] xl:w-[34%] border-l border-[#1f2937] min-h-0 relative z-20">
+  <div className="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
+    <TradingPanel
+      balance={currentBalance}
+      pair={pair}
+      onTrade={handleTrade}
+      activeTrade={activeTrade}
+      buyLabel={settings?.buy_button_label}
+      sellLabel={settings?.sell_button_label}
+      settings={{ ...settings, payout_multiplier: payoutMultiplier }}
+      activeCurrency={activeCurrency}
+      livePrice={livePrice}
+    />
+  </div>
+  <div className="lg:w-1/2 overflow-hidden flex flex-col">
+    <DesktopRightTab 
+      user={user} 
+      conversionRate={conversionRate} 
+      activeCurrency={activeCurrency} 
+      activeTab={desktopTab} 
+      onTabChange={setDesktopTab} 
+      onBalanceDeducted={refreshUser} 
+      onLoginClick={() => openAuth('login')} 
+      onTournamentsChange={refreshActiveTournament} 
+    />
+  </div>
+</div>
+              
       </div>
 
       <AuthModals
