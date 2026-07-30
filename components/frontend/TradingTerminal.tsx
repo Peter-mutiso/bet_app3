@@ -505,7 +505,11 @@ const symbol = getCurrencySymbol(activeCurrency)
         <div className="flex-1 min-h-0 overflow-hidden relative">
 
           {/* Trade tab: stats + chart + trading panel — scrollable */}
-          <div className={`absolute inset-0 overflow-y-auto ${mobileTab === 'trade' ? 'block' : 'hidden'}`}>
+          <div
+  className={`absolute inset-0 flex flex-col overflow-hidden ${
+    mobileTab === "trade" ? "flex" : "hidden"
+  }`}
+>
             {/* Pair ticker — mobile */}
             <PairTicker pairs={pairs} selectedPairId={pair?.id} onSelect={setSelectedPairId} settings={settings} />
             {/* Stats bar */}
@@ -558,7 +562,12 @@ const symbol = getCurrencySymbol(activeCurrency)
               </div>
             </div>
             {/* Chart — fixed height */}
-            <div className="h-[350px] w-full bg-[#0a0f1c] shrink-0 relative">
+            <div
+  className="w-full bg-[#0a0f1c] shrink-0 relative"
+  style={{
+    height: "clamp(220px, 40vh, 360px)",
+  }}
+>
               {switching ? (
                 <div className="absolute inset-0 bg-[#0a0f1c] flex flex-col items-center justify-center gap-3">
                   <div className="flex items-end gap-[3px] h-10">
@@ -581,12 +590,12 @@ const symbol = getCurrencySymbol(activeCurrency)
                   onTick={isMobile ? handleTick : undefined}
                   streamUrl="/api/chart/stream"
                   entryPrice={null}
-                  visibleCandles={12}
+                  visibleCandles={10}
                 />
               )}
             </div>
             {/* Trading panel */}
-            <div className="border-t border-[#1f2937]">
+<div className="shrink-0 border-t border-[#1f2937]">
               <TradingPanel
                 balance={currentBalance}
                 pair={pair}
@@ -743,14 +752,14 @@ const symbol = getCurrencySymbol(activeCurrency)
                 onTick={isMobile ? undefined : handleTick}
                 streamUrl="/api/chart/stream"
                 entryPrice={null}
-                visibleCandles={30}
+                visibleCandles={20}
               />
             )}
           </div>
         </div>
 
         {/* Right: trading panel + chat */}
-        <div className="flex flex-col lg:flex-row w-[320px] lg:w-[640px] shrink-0 border-l border-[#1f2937] min-h-0 overflow-hidden">
+        <div className="flex flex-col lg:flex-row w-full lg:max-w-[680px] xl:max-w-[720px] shrink-0 border-l border-[#1f2937] min-h-0 overflow-hidden">
           <div className="lg:w-[320px] flex-1 lg:flex-none border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
             <TradingPanel
               balance={currentBalance}
