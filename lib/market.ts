@@ -14,6 +14,12 @@ class MarketEngine {
   // One candle every 60 seconds
   private readonly candleDuration = 60;
 
+  // Number of candles sent to the frontend
+  private readonly visibleHistory = 50;
+
+  // Number of candles kept in memory
+  private readonly maxHistory = 300;
+
   constructor() {
     this.seed();
   }
@@ -37,8 +43,8 @@ class MarketEngine {
     let price = this.price;
     const nowBucket = this.currentBucket();
 
-    // Generate 100 historical candles
-    for (let i = 100; i > 0; i--) {
+    // Generate 300 historical candles
+    for (let i = this.maxHistory; i > 0; i--) {
       const time = nowBucket - i * this.candleDuration;
 
       const open = price;
@@ -58,7 +64,7 @@ class MarketEngine {
 
     this.price = price;
 
-    // Current live candle
+    // Create the current live candle
     const last = this.candles[this.candles.length - 1];
 
     this.currentCandle = {
@@ -70,10 +76,15 @@ class MarketEngine {
     };
 
     this.candles.push(this.currentCandle);
+
+    // Keep only maxHistory candles
+    while (this.candles.length > this.maxHistory) {
+      this.candles.shift();
+    }
   }
 
   /**
-   * Called every tick (every second).
+   * Called every second.
    */
   next(): Candle {
     // Small random movement
@@ -81,7 +92,7 @@ class MarketEngine {
 
     const bucket = this.currentBucket();
 
-    // New candle every 60 seconds
+    // Start a new candle every minute
     if (!this.currentCandle || this.currentCandle.time !== bucket) {
       const previousClose = this.currentCandle
         ? this.currentCandle.close
@@ -97,13 +108,13 @@ class MarketEngine {
 
       this.candles.push(this.currentCandle);
 
-      // Keep only latest 300 candles
-      while (this.candles.length > 300) {
+      // Keep only the latest maxHistory candles
+      while (this.candles.length > this.maxHistory) {
         this.candles.shift();
       }
     }
 
-    // Update current candle
+    // Update live candle
     this.currentCandle.close = this.price;
     this.currentCandle.high = Math.max(
       this.currentCandle.high,
@@ -115,21 +126,25 @@ class MarketEngine {
     );
 
     return {
-  ...this.currentCandle,
-};
+      ...this.currentCandle,
+    };
   }
 
-  getCandles(): Candle[] {
-  const visibleHistory = 50;
-
-  const candles = this.candles.slice(-visibleHistory);
-
-  console.log("MarketEngine candles:", candles.length);
-
-  return candles;
-}
   /**
-   * Latest price.
+   * Returns only the latest visible candles.
+   */
+  getCandles(): Candle[] {
+    const candles = this.candles.slice(-this.visibleHistory);
+
+    console.log(
+      `MarketEngine: ${this.candles.length} total, ${candles.length} returned`
+    );
+
+    return [...candles];
+  }
+
+  /**
+   * Current market price.
    */
   getPrice(): number {
     return this.price;
