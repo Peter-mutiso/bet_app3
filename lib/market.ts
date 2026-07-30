@@ -1,154 +1,219 @@
 type Candle = {
-  time: number; // Unix timestamp (seconds)
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-};
+  time: number
+  open: number
+  high: number
+  low: number
+  close: number
+}
 
 class MarketEngine {
-  private price = 100;
-  private candles: Candle[] = [];
-  private currentCandle: Candle | null = null;
+  private price = 100
 
-  // One candle every 60 seconds
-  private readonly candleDuration = 60;
+  private candles: Candle[] = []
 
-  // Number of candles sent to the frontend
-  private readonly visibleHistory = 50;
+  private currentCandle: Candle | null = null
 
-  // Number of candles kept in memory
-  private readonly maxHistory = 300;
+  private readonly candleDuration = 60
+
+  private readonly visibleHistory = 300
+
+  private readonly maxHistory = 1000
+
+  // -------- MARKET STATE --------
+
+  private drift = 0
+
+  private trend = 0
+
+  private volatility = 0.08
 
   constructor() {
-    this.seed();
+    this.seed()
   }
 
-  /**
-   * Returns the current candle bucket.
-   * Example:
-   * 12:01:34 -> 12:01:00
-   */
   private currentBucket(): number {
     return (
       Math.floor(Date.now() / 1000 / this.candleDuration) *
       this.candleDuration
-    );
+    )
   }
 
-  /**
-   * Generate historical candles.
-   */
+  
+    private nextPrice() {
+
+  // Change trend roughly every minute
+  if (Math.random() < 0.015) {
+
+    this.trend =
+      (Math.random() - 0.5) * 0.04
+
+    this.volatility =
+      0.015 + Math.random() * 0.02
+  }
+
+  // Smooth momentum
+  this.drift =
+    this.drift * 0.985 +
+    this.trend * 0.015
+
+  // Small random movement
+  const noise =
+    (Math.random() - 0.5) *
+    this.volatility
+
+  this.price +=
+    this.drift +
+    noise
+
+  return this.price
+}
+
   private seed() {
-    let price = this.price;
-    const nowBucket = this.currentBucket();
+    let price = this.price
 
-    // Generate 300 historical candles
-    for (let i = this.maxHistory; i > 0; i--) {
-      const time = nowBucket - i * this.candleDuration;
+    const bucket =
+      this.currentBucket()
 
-      const open = price;
-      const close = open + (Math.random() - 0.5) * 2;
+    for (
+      let i = this.maxHistory;
+      i > 0;
+      i--
+    ) {
+      const time =
+        bucket -
+        i * this.candleDuration
+
+      const open = price
+
+      const move =
+        (Math.random() - 0.5) * 0.35
+
+      const close =
+        open + move
+
+      const wickUp =
+        Math.random() * 0.18
+
+      const wickDown =
+        Math.random() * 0.18
 
       const candle: Candle = {
         time,
         open,
-        high: Math.max(open, close) + Math.random() * 0.5,
-        low: Math.min(open, close) - Math.random() * 0.5,
+        high:
+          Math.max(open, close) +
+          wickUp,
+        low:
+          Math.min(open, close) -
+          wickDown,
         close,
-      };
+      }
 
-      this.candles.push(candle);
-      price = close;
+      this.candles.push(candle)
+
+      price = close
     }
 
-    this.price = price;
+    this.price = price
 
-    // Create the current live candle
-    const last = this.candles[this.candles.length - 1];
+    const last =
+      this.candles[
+        this.candles.length - 1
+      ]
 
     this.currentCandle = {
-      time: nowBucket,
+      time: bucket,
       open: last.close,
       high: last.close,
       low: last.close,
       close: last.close,
-    };
+    }
 
-    this.candles.push(this.currentCandle);
+    this.candles.push(
+      this.currentCandle
+    )
+  }
+next(): Candle {
+  const bucket = this.currentBucket()
 
-    // Keep only maxHistory candles
+  // Create new candle
+  if (
+    !this.currentCandle ||
+    this.currentCandle.time !== bucket
+  ) {
+    const previousClose = this.currentCandle
+      ? this.currentCandle.close
+      : this.price
+
+    this.currentCandle = {
+      time: bucket,
+      open: previousClose,
+      high: previousClose,
+      low: previousClose,
+      close: previousClose,
+    }
+
+    this.candles.push(this.currentCandle)
+
     while (this.candles.length > this.maxHistory) {
-      this.candles.shift();
+      this.candles.shift()
     }
   }
 
-  /**
-   * Called every second.
-   */
-  next(): Candle {
-    // Small random movement
-    this.price += (Math.random() - 0.5) * 0.5;
+  // Generate new price
+  let price = this.nextPrice()
 
-    const bucket = this.currentBucket();
+  // ----------------------------------
+  // LIMIT PRICE MOVEMENT
+  // ----------------------------------
 
-    // Start a new candle every minute
-    if (!this.currentCandle || this.currentCandle.time !== bucket) {
-      const previousClose = this.currentCandle
-        ? this.currentCandle.close
-        : this.price;
+  const MAX_MOVE = 2.0
 
-      this.currentCandle = {
-        time: bucket,
-        open: previousClose,
-        high: previousClose,
-        low: previousClose,
-        close: previousClose,
-      };
+  const upper =
+    this.currentCandle.open + MAX_MOVE
 
-      this.candles.push(this.currentCandle);
+  const lower =
+    this.currentCandle.open - MAX_MOVE
 
-      // Keep only the latest maxHistory candles
-      while (this.candles.length > this.maxHistory) {
-        this.candles.shift();
-      }
-    }
-
-    // Update live candle
-    this.currentCandle.close = this.price;
-    this.currentCandle.high = Math.max(
-      this.currentCandle.high,
-      this.price
-    );
-    this.currentCandle.low = Math.min(
-      this.currentCandle.low,
-      this.price
-    );
-
-    return {
-      ...this.currentCandle,
-    };
+  if (price > upper) {
+    price = upper
+    this.price = upper
   }
 
-  /**
-   * Returns only the latest visible candles.
-   */
-  getCandles(): Candle[] {
-    const candles = this.candles.slice(-this.visibleHistory);
-
-    console.log(
-      `MarketEngine: ${this.candles.length} total, ${candles.length} returned`
-    );
-
-    return [...candles];
+  if (price < lower) {
+    price = lower
+    this.price = lower
   }
 
-  /**
-   * Current market price.
-   */
-  getPrice(): number {
-    return this.price;
+  // ----------------------------------
+
+  this.currentCandle.close = price
+
+  this.currentCandle.high = Math.max(
+    this.currentCandle.high,
+    price
+  )
+
+  this.currentCandle.low = Math.min(
+    this.currentCandle.low,
+    price
+  )
+
+  return {
+    ...this.currentCandle,
   }
 }
 
-export const market = new MarketEngine();
+  getCandles() {
+    return this.candles.slice(
+      -this.visibleHistory
+    )
+  }
+
+  getPrice() {
+    return this.price
+  }
+}
+
+export const market =
+  new MarketEngine()
