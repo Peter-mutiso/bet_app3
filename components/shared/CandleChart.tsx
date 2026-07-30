@@ -230,7 +230,6 @@ const CandleChart = forwardRef<
       const series = seriesRef.current
 
 if (!series) return
-
 const total = series.data().length
 
 chart.timeScale().setVisibleLogicalRange({
