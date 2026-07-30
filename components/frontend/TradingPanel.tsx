@@ -124,7 +124,7 @@ export default function TradingPanel({
   // ── In position: show live trade card ───────────────────────────────
   if (isInPosition) {
     return (
-      <div className="w-full h-full bg-[#111827] flex flex-col p-4 gap-3">
+      <div className="w-full bg-[#111827] flex flex-col p-4 gap-3">
         <div className="text-xs text-gray-400 uppercase tracking-widest font-bold">Current Trade</div>
 
         <div className="bg-[#0d1525] rounded-xl p-4 space-y-3 border border-[#1f2937]">
@@ -191,7 +191,7 @@ export default function TradingPanel({
 
   // ── Idle: normal trading controls ────────────────────────────────────
   return (
-    <div className="w-full h-full bg-[#111827] flex flex-col p-4">
+    <div className="w-full bg-[#111827] flex flex-col p-4">
       <div className="text-sm font-bold sm:flex hidden items-center justify-start  text-white mb-4">
         Trading Panel <span className="text-xs mx-1 text-gray-400 font-normal"> ({currency})</span>
       </div>

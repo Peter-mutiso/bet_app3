@@ -480,7 +480,7 @@ const symbol = getCurrencySymbol(activeCurrency)
     : (activeCurrency === 'USD' ? realBalanceKes / conversionRate : realBalanceKes)
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden">
+    <div className="flex flex-col h-screen w-full overflow-hidden">
       <Header
         user={user}
         settings={settings}
@@ -500,14 +500,16 @@ const symbol = getCurrencySymbol(activeCurrency)
       {/* <NewsTicker news={news} /> */}
 
       {/* ── MOBILE layout (hidden on md+) ── */}
-      <div className="flex md:hidden flex-col flex-1 min-h-0 overflow-hidden">
+      <div className="flex md:hidden flex-col flex-1 min-h-0 overflow-y-auto">
         {/* Tab content */}
-        <div className="flex-1 min-h-0 overflow-hidden relative">
+        <div className="flex-1 overflow-y-auto relative">
 
           {/* Trade tab: stats + chart + trading panel — scrollable */}
           <div
-  className={`absolute inset-0 flex flex-col overflow-hidden ${
-    mobileTab === "trade" ? "flex" : "hidden"
+  className={`absolute inset-0 ${
+    mobileTab === "trade"
+      ? "flex flex-col"
+      : "hidden"
   }`}
 >
             {/* Pair ticker — mobile */}
@@ -563,9 +565,11 @@ const symbol = getCurrencySymbol(activeCurrency)
             </div>
             {/* Chart — fixed height */}
             <div
-  className="w-full bg-[#0a0f1c] shrink-0 relative"
+  className="w-full bg-[#0a0f1c] relative flex-shrink-0"
   style={{
-    height: "clamp(220px, 40vh, 360px)",
+    aspectRatio: "16 / 9",
+    minHeight: "240px",
+    maxHeight: "420px",
   }}
 >
               {switching ? (
@@ -595,7 +599,7 @@ const symbol = getCurrencySymbol(activeCurrency)
               )}
             </div>
             {/* Trading panel */}
-<div className="shrink-0 border-t border-[#1f2937]">
+<div className="border-t border-[#1f2937] flex-shrink-0">
               <TradingPanel
                 balance={currentBalance}
                 pair={pair}
@@ -725,7 +729,17 @@ const symbol = getCurrencySymbol(activeCurrency)
             </div>
           </div>
           {/* Chart */}
-          <div className="flex-1 min-h-0 relative w-full overflow-hidden">
+<div
+  className="
+w-full
+bg-[#0a0f1c]
+relative
+overflow-hidden
+h-[42vh]
+min-h-[320px]
+max-h-[650px]
+"
+>
             {switching ? (
               <div className="absolute inset-0 bg-[#0a0f1c] flex flex-col items-center justify-center gap-4">
                 <div className="flex items-end gap-[4px] h-16">
@@ -759,8 +773,8 @@ const symbol = getCurrencySymbol(activeCurrency)
         </div>
 
         {/* Right: trading panel + chat */}
-        <div className="flex flex-col lg:flex-row w-full lg:max-w-[680px] xl:max-w-[720px] shrink-0 border-l border-[#1f2937] min-h-0 overflow-hidden">
-          <div className="lg:w-[320px] flex-1 lg:flex-none border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
+        <div className="flex flex-col lg:flex-row w-full lg:w-[38%] xl:w-[34%] border-l border-[#1f2937] min-h-0">
+          <div className="lg:w-1/2 border-b lg:border-b-0 lg:border-r border-[#1f2937] overflow-y-auto">
             <TradingPanel
               balance={currentBalance}
               pair={pair}
@@ -773,7 +787,7 @@ const symbol = getCurrencySymbol(activeCurrency)
               livePrice={livePrice}
             />
           </div>
-          <div className="flex-1 lg:w-[320px] lg:flex-none overflow-hidden flex flex-col">
+          <div className="lg:w-1/2 overflow-hidden flex flex-col">
             <DesktopRightTab user={user} conversionRate={conversionRate} activeCurrency={activeCurrency} activeTab={desktopTab} onTabChange={setDesktopTab} onBalanceDeducted={refreshUser} onLoginClick={() => openAuth('login')} onTournamentsChange={refreshActiveTournament} />
           </div>
         </div>
