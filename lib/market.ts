@@ -119,14 +119,15 @@ class MarketEngine {
 };
   }
 
-  /**
-   * Historical candles.
-   */
   getCandles(): Candle[] {
-    console.log("MarketEngine candles:", this.candles.length);
-    return [...this.candles];
-  }
+  const visibleHistory = 50;
 
+  const candles = this.candles.slice(-visibleHistory);
+
+  console.log("MarketEngine candles:", candles.length);
+
+  return candles;
+}
   /**
    * Latest price.
    */

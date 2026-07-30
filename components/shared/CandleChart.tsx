@@ -67,7 +67,7 @@ function fillClientGaps(bars: Bar[], candleDurationSec: number): Bar[] {
 }
 
 const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
-  { historicalCandles, pairId, candleDuration, onTick, streamUrl = '/api/admin/chart/stream', entryPrice, visibleCandles = 30 },
+  { historicalCandles, pairId, candleDuration, onTick, streamUrl = '/api/admin/chart/stream', entryPrice, visibleCandles = 15 },
   ref
 ) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -79,7 +79,7 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
 
   const userScrolledRef      = useRef(false)
   const programmingScrollRef = useRef(false)
-  const barSpacingRef        = useRef(18)
+  const barSpacingRef        = useRef(25)
   const lastHistBarTimeRef   = useRef<number>(0)
 
   useEffect(() => { onTickRef.current = onTick }, [onTick])
@@ -141,8 +141,8 @@ const CandleChart = forwardRef<CandleChartHandle, Props>(function CandleChart(
         borderColor: 'rgba(148,163,184,0.15)',
         timeVisible: true,
         secondsVisible: candleDuration < 60,
-        rightOffset: 10,
-        barSpacing: 18,
+        rightOffset: 5,
+        barSpacing: 9,
       },
       handleScroll: true,
       handleScale: true,
@@ -287,7 +287,7 @@ observer.observe(el)
 
     console.log("Last logical index:", last)
 
-    const historyRatio = 0.50
+    const historyRatio = 0.30
     const historyBars = Math.floor(visibleCandles * historyRatio)
 
     console.log("Visible candles:", visibleCandles)

@@ -17,7 +17,7 @@ export async function GET() {
         try {
 
           const candle = market.next();
-          console.log("LIVE TICK:", candle.close);
+          
 
           const payload = {
             price: candle.close,
